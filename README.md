@@ -22,8 +22,6 @@ PhoCLIP is a Vietnamese adaptation of the CLIP (Contrastive Language-Image Pre-t
 - **Image Encoder**: ResNet50 (pretrained on ImageNet)
 - **Projection Heads**: Maps both modalities to a shared embedding space
 
-This project is developed from [ducngg/PhoCLIP](https://github.com/ducngg/PhoCLIP).
-
 ## ✨ Features
 
 - 🇻🇳 **Vietnamese Language Support** - Optimized for Vietnamese text with PhoBERT
