@@ -31,7 +31,9 @@ captions/
 *.jsonl
 *.json
 *.csv
-*.txt
+
+# Allow requirements.txt
+!requirements.txt
 
 # Model weights
 *.pt
@@ -42,7 +44,9 @@ checkpoints/
 
 # Jupyter
 .ipynb_checkpoints/
-*.ipynb
+
+# Allow project notebooks
+!phoclip.ipynb
 
 # IDE
 .vscode/
