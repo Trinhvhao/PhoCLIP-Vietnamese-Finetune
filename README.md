@@ -103,38 +103,21 @@ model, txt_embeds = get_text_embeddings(valid_df, "best.pt")
 
 ## Model Architecture
 
-```
-┌─────────────────────────────────────────────────────┐
-│                   PhoCLIP Model                     │
-├─────────────────────────────────────────────────────┤
-│                                                     │
-│   ┌──────────────┐         ┌──────────────┐         │
-│   │ Image Input  │         │  Text Input  │         │
-│   │  (224x224)   │         │  (max_len)   │         │
-│   └──────┬───────┘         └──────┬───────┘         │
-│          │                        │                 │
-│          ▼                        ▼                 │
-│   ┌──────────────┐         ┌──────────────┐         │
-│   │  ResNet50    │         │PhoBERT-large │         │
-│   │  (2048-dim)  │         │  (1024-dim)  │         │
-│   └──────┬───────┘         └──────┬───────┘         │
-│          │                        │                 │
-│          ▼                        ▼                 │
-│   ┌──────────────┐         ┌──────────────┐         │
-│   │ Projection   │         │ Projection   │         │
-│   │    Head      │         │    Head      │         │
-│   │  (512-dim)   │         │  (512-dim)   │         │
-│   └──────┬───────┘         └──────┬───────┘         │
-│          │                        │                 │
-│          └──────────┬─────────────┘                 │
-│                     ▼                               │
-│          ┌──────────────────────┐                   │
-│          │  Contrastive Loss    │                   │
-│          │  (Temperature=1.0)   │                   │
-│          └──────────────────────┘                   │
-│                                                     │
-└─────────────────────────────────────────────────────┘
-```
+The PhoCLIP architecture consists of two parallel encoders that process images and Vietnamese text independently, followed by projection heads that map both modalities into a shared 512-dimensional embedding space. The model is trained using contrastive learning to align semantically related image-text pairs.
+
+
+<div align="center">
+  <img src="assets/architecture.png" alt="PhoCLIP Architecture" width="800"/>
+  <p><em>Figure 1: PhoCLIP dual-encoder architecture with contrastive learning objective</em></p>
+</div>
+
+**Image Encoder**: ResNet50 pre-trained on ImageNet extracts visual features from 224×224 RGB images, producing 2048-dimensional representations that capture hierarchical visual patterns from low-level edges to high-level semantic concepts.
+
+**Text Encoder**: PhoBERT-large processes Vietnamese text with proper word segmentation, generating 1024-dimensional contextual embeddings that encode both syntactic and semantic information specific to Vietnamese language structure.
+
+**Projection Heads**: Lightweight fully-connected networks with GELU activation and layer normalization map both image and text representations to a common 512-dimensional space where cross-modal similarity can be computed efficiently.
+
+**Training Objective**: The model optimizes a symmetric cross-entropy loss with temperature scaling (τ=1.0), encouraging high cosine similarity between matching image-text pairs while pushing apart non-matching pairs in the embedding space.
 
 ## Training
 
@@ -271,10 +254,20 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 For questions or feedback, please open an issue on GitHub.
 
+## Citation
+
+If you use this work in your research, please cite:
+
+```bibtex
+@misc{phoclip2024,
+  title={PhoCLIP: Vietnamese Image-Text Matching using Contrastive Learning},
+  author={Trinh, Hao},
+  year={2024},
+  publisher={GitHub},
+  url={https://github.com/Trinhvhao/PhoCLIP-Vietnamese-Finetune}
+}
+```
+
 ---
 
-<div align="center">
-
-Made with ❤️ for Vietnamese NLP
-
-</div>
+This project is developed for research and educational purposes in Vietnamese natural language processing and multimodal learning.
