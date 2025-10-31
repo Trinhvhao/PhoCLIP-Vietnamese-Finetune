@@ -1,36 +1,31 @@
-<div align="center">
-
-# PhoCLIP - Vietnamese Image-Text Matching
+# PhoCLIP: Vietnamese Image-Text Matching
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-**A Vietnamese CLIP model for image-text retrieval using PhoBERT and ResNet50**
+## Overview
 
-[Features](#features) • [Installation](#installation) • [Usage](#usage) • [Model Architecture](#model-architecture) • [Training](#training) • [Results](#results)
+PhoCLIP is a Vietnamese adaptation of CLIP (Contrastive Language-Image Pre-training), a multimodal learning framework that learns joint representations of images and text. This implementation addresses the lack of Vietnamese language support in existing vision-language models by combining state-of-the-art Vietnamese NLP models with proven computer vision architectures.
 
-</div>
+The model employs a dual-encoder architecture where images and Vietnamese text are independently encoded into a shared embedding space. Through contrastive learning, the model learns to maximize the similarity between matching image-text pairs while minimizing similarity for non-matching pairs. This approach enables bidirectional retrieval: finding relevant images given Vietnamese text queries, or generating Vietnamese descriptions for given images.
 
----
+Our implementation leverages PhoBERT-large, a transformer-based model pre-trained on large-scale Vietnamese corpora, for text encoding. For image encoding, we utilize ResNet50 pre-trained on ImageNet. Both encoders are connected through projection heads that map their outputs to a common 512-dimensional embedding space where semantic similarity can be measured using cosine distance.
 
-## 📋 Overview
 
-PhoCLIP is a Vietnamese adaptation of the CLIP (Contrastive Language-Image Pre-training) model, designed specifically for Vietnamese image-text matching tasks. It combines:
+## Key Features
 
-- **Text Encoder**: PhoBERT-large (Vietnamese BERT)
-- **Image Encoder**: ResNet50 (pretrained on ImageNet)
-- **Projection Heads**: Maps both modalities to a shared embedding space
+**Vietnamese Language Support**: Utilizes PhoBERT-large for robust Vietnamese text understanding, including proper handling of Vietnamese word segmentation and linguistic nuances.
 
-## ✨ Features
+**Multi-Dataset Training**: Trained on 168,725 images with 843,957 Vietnamese captions from COCO, Flickr30k, KTVIC, and OpenViIC datasets, ensuring broad coverage of visual concepts and linguistic expressions.
 
-- 🇻🇳 **Vietnamese Language Support** - Optimized for Vietnamese text with PhoBERT
-- 🖼️ **Multi-Dataset Training** - Trained on COCO, Flickr, KTVIC, and OpenViIC datasets
-- 🔍 **Bidirectional Search** - Find images from text or text from images
-- ⚡ **Fast Inference** - Optimized for GPU acceleration
-- 📊 **High Accuracy** - Achieves competitive Top-5 accuracy on Vietnamese datasets
+**Bidirectional Retrieval**: Supports both text-to-image search (finding images from Vietnamese descriptions) and image-to-text search (finding descriptions for given images).
 
-## 🚀 Installation
+**Efficient Architecture**: Employs ResNet50 for image encoding and PhoBERT-large for text encoding, with lightweight projection heads enabling fast inference on standard hardware.
+
+**Contrastive Learning**: Uses symmetric cross-entropy loss with temperature scaling to learn discriminative representations in the shared embedding space.
+
+## Installation
 
 ### Prerequisites
 
@@ -60,7 +55,7 @@ import py_vncorenlp
 py_vncorenlp.download_model()
 ```
 
-## 📖 Usage
+## Usage
 
 ### Quick Start
 
@@ -106,7 +101,7 @@ model, img_embeds = get_image_embeddings(valid_df, "best.pt")
 model, txt_embeds = get_text_embeddings(valid_df, "best.pt")
 ```
 
-## 🏗️ Model Architecture
+## Model Architecture
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -141,7 +136,7 @@ model, txt_embeds = get_text_embeddings(valid_df, "best.pt")
 └─────────────────────────────────────────────────────┘
 ```
 
-## 🎯 Training
+## Training
 
 ### Configuration
 
@@ -185,25 +180,39 @@ The model is trained on multiple Vietnamese image-caption datasets:
    - Top-K accuracy (K=1, 5, 10)
    - Image-to-text and text-to-image retrieval
 
-## 📊 Results
+## Experimental Results
 
-### Top-K Accuracy
+### Qualitative Results
 
-| Metric | Score |
-|--------|-------|
-| Top-1 | TBD |
-| Top-5 | TBD |
-| Top-10 | TBD |
+The following examples demonstrate the model's capability to retrieve semantically relevant images from Vietnamese text queries:
 
-### Example Queries
+#### Query: "xe hơi đậu trước ngôi nhà"
+![Car parked in front of house](assets/xe_hơi%20đậu%20trước%20ngôi%20nhà.res.png)
 
-**Text Query**: "xe hơi đậu trước ngôi nhà"
-- Successfully retrieves images of cars parked in front of houses
+#### Query: "hai con chó"
+![Two dogs](assets/hai%20con%20chó.res.png)
 
-**Image Query**: Upload an image
-- Returns similar images from the database
+#### Query: "một người đang dùng máy tính"
+![Person using computer](assets/một%20người%20đang%20dùng%20máy_tính.res.png)
 
-## 🔧 Advanced Usage
+#### Query: "đi siêu thị"
+![Going to supermarket](assets/đi%20siêu_thị.res.png)
+
+### How It Works
+
+1. **Input**: Vietnamese text query (e.g., "xe hơi đậu trước ngôi nhà")
+2. **Text Encoding**: PhoBERT converts text to 1024-dim vector
+3. **Projection**: Maps to 512-dim shared space
+4. **Similarity Search**: Computes cosine similarity with all image embeddings
+5. **Output**: Top-K most similar images
+
+### Analysis
+
+The qualitative results demonstrate several key capabilities of the model. First, it exhibits robust understanding of Vietnamese linguistic structures, correctly interpreting compound words and phrases that are characteristic of the Vietnamese language. Second, the model shows strong object recognition abilities, accurately identifying entities such as vehicles, animals, and electronic devices across diverse visual contexts. Third, it demonstrates scene-level understanding, successfully retrieving images that match not just individual objects but entire scenarios described in the queries. Finally, the model captures action and activity semantics, distinguishing between static objects and dynamic scenes involving human activities.
+
+These results suggest that the contrastive learning approach effectively bridges the semantic gap between Vietnamese text and visual content, enabling meaningful cross-modal retrieval despite the linguistic differences between Vietnamese and the languages typically used in vision-language pre-training.
+
+## Advanced Usage
 
 ### Custom Dataset
 
@@ -231,7 +240,7 @@ model = CLIPModel()
 # ... training code
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Phoclip/
@@ -242,15 +251,15 @@ Phoclip/
 └── images/             # Image dataset directory
 ```
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **PhoBERT**: [VinAI Research](https://github.com/VinAIResearch/PhoBERT)
 - **CLIP**: [OpenAI](https://github.com/openai/CLIP)
@@ -258,7 +267,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - **Original PhoCLIP**: [ducngg/PhoCLIP](https://github.com/ducngg/PhoCLIP)
 - **Datasets**: COCO, Flickr30k, KTVIC, OpenViIC
 
-## 📧 Contact
+## Contact
 
 For questions or feedback, please open an issue on GitHub.
 
